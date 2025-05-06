@@ -5,6 +5,11 @@ import os
 import time
 from io import BytesIO
 from PIL import Image
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+ALBUM_ID = os.getenv('ALBUM_ID')
 
 SCOPES = ['https://www.googleapis.com/auth/photoslibrary.readonly']
 
@@ -41,8 +46,7 @@ def display_slideshow(photo_urls, delay=5):
 
 def main():
     creds = authenticate()
-    album_id = input("Paste the album ID you want to show: ")
-    photo_urls = get_photos_in_album(creds, album_id)
+    photo_urls = get_photos_in_album(creds, ALBUM_ID)
 
     if not photo_urls:
         print("No photos found in album!")
