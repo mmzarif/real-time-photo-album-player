@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Photo Frame Controller</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        button {
+            font-size: 1.5em;
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 10px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Photo Frame Controller</h1>
+    <button onclick="send('/pause')">⏸ Pause</button>
+    <button onclick="send('/resume')">▶️ Resume</button>
+    <button onclick="send('/next')">⏭ Next Photo</button>
+    <button onclick="send('/refresh')">🔄 Refresh Album</button>
+
+    <div id="status">Status: Loading...</div>
+
+    <script>
+        const apiBase = window.location.origin;
+
+        async function send(endpoint) {
+            try {
+                await fetch(apiBase + endpoint, { method: 'POST' });
+                document.getElementById('status').innerText = `Sent: ${endpoint}`;
+                fetchStatus();
+            } catch (error) {
+                document.getElementById('status').innerText = 'Error sending command';
+            }
+        }
+
+        async function fetchStatus() {
+            try {
+                const res = await fetch(apiBase + '/');
+                const data = await res.json();
+                document.getElementById('status').innerText = 
+                    `Paused: ${data.paused}, Next: ${data.next}, Refresh: ${data.refresh}`;
+            } catch {
+                document.getElementById('status').innerText = 'Error fetching status';
+            }
+        }
+
+        // Auto-refresh status every 5 seconds
+        setInterval(fetchStatus, 5000);
+        fetchStatus();
+    </script>
+</body>
+</html>
